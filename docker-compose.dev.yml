@@ -1,0 +1,48 @@
+version: '3.9'
+name: restapi-dev
+services:
+  app:
+    build:
+      context: restapi/
+      dockerfile: ./Dockerfile
+    container_name: restapi-app
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./restapi:/project
+    ports:
+      - 8080:8080
+    depends_on:
+      - database
+    networks:
+      - restapi
+
+  database:
+    image: mariadb
+    restart: always
+    container_name: restapi-db
+    tty: true
+    stdin_open: true
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+      MARIADB_USER: eltex
+      MARIADB_PASSWORD: 12345678
+      MARIADB_DATABASE: eltex
+    networks:
+      - restapi
+
+  adminer:
+    image: adminer
+    container_name: restapi-adminer
+    restart: always
+    ports:
+      - 8000:8080
+    depends_on:
+      - database
+    networks:
+      - restapi
+
+
+networks:
+  restapi: 
+    driver: bridge
